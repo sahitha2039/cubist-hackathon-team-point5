@@ -1,0 +1,61 @@
+position,depth,mode,move,time_s,nodes
+Start,1,balanced,h2h3,0.003826,20
+Start,1,kasparov,h2h3,0.002856,20
+Start,1,karpov,h2h3,0.003337,20
+Start,1,carlsen,h2h3,0.002915,20
+Start,1,kramnik,h2h3,0.002793,20
+Start,2,balanced,e2e3,0.023529,135
+Start,2,kasparov,e2e3,0.034136,160
+Start,2,karpov,g1f3,0.018282,87
+Start,2,carlsen,e2e3,0.031327,160
+Start,2,kramnik,e2e3,0.05326,154
+Start,3,balanced,h2h3,0.371544,903
+Start,3,kasparov,g1f3,0.090221,618
+Start,3,karpov,h2h3,0.114328,870
+Start,3,carlsen,h2h3,0.103031,905
+Start,3,kramnik,h2h3,0.170229,891
+Start,4,balanced,e2e3,1.869889,8967
+Start,4,kasparov,e2e3,2.451112,9472
+Start,4,karpov,c2c3,1.146285,6740
+Start,4,carlsen,e2e3,2.012799,13368
+Start,4,kramnik,e2e3,1.974441,11925
+Italian Game,1,balanced,c4f7,0.005328,33
+Italian Game,1,kasparov,c4f7,0.005749,33
+Italian Game,1,karpov,e1g1,0.005063,33
+Italian Game,1,carlsen,c4f7,0.004848,33
+Italian Game,1,kramnik,c4f7,0.005132,33
+Italian Game,2,balanced,f3e5,0.089403,467
+Italian Game,2,kasparov,f3e5,0.049809,277
+Italian Game,2,karpov,e1g1,0.01878,132
+Italian Game,2,carlsen,f3g5,0.083569,488
+Italian Game,2,kramnik,f3e5,0.079511,467
+Italian Game,3,balanced,e1g1,0.933104,6198
+Italian Game,3,kasparov,c4f7,0.458071,3258
+Italian Game,3,karpov,e1g1,0.253409,1778
+Italian Game,3,carlsen,c4b5,0.386365,2830
+Italian Game,3,kramnik,c4d3,0.85887,6305
+Italian Game,4,balanced,f3g5,5.266625,29232
+Italian Game,4,kasparov,c4f7,7.986776,19932
+Italian Game,4,karpov,e1g1,2.50394,9527
+Italian Game,4,carlsen,f3g5,11.753394,55531
+Italian Game,4,kramnik,f3g5,4.947848,28483
+KP Endgame,1,balanced,e2e4,0.000877,8
+KP Endgame,1,kasparov,e2e4,0.000703,8
+KP Endgame,1,karpov,e2e4,0.000699,8
+KP Endgame,1,carlsen,e2e4,0.000735,8
+KP Endgame,1,kramnik,e2e4,0.000694,8
+KP Endgame,2,balanced,e2e4,0.00451,48
+KP Endgame,2,kasparov,d4c5,0.002507,30
+KP Endgame,2,karpov,d4d3,0.004287,48
+KP Endgame,2,carlsen,d4d3,0.004284,47
+KP Endgame,2,kramnik,d4d3,0.002924,34
+KP Endgame,3,balanced,e2e4,0.019093,253
+KP Endgame,3,kasparov,e2e4,0.012198,164
+KP Endgame,3,karpov,d4e4,0.012084,159
+KP Endgame,3,carlsen,d4e4,0.014509,197
+KP Endgame,3,kramnik,e2e4,0.012016,156
+KP Endgame,4,balanced,d4e4,0.022159,313
+KP Endgame,4,kasparov,e2e4,0.052526,654
+KP Endgame,4,karpov,d4e4,0.017716,269
+KP Endgame,4,carlsen,d4d3,0.097707,1064
+KP Endgame,4,kramnik,d4e4,0.024117,337
