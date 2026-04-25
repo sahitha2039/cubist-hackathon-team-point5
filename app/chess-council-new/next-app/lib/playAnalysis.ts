@@ -14,10 +14,8 @@ const GRADE_SWINGS: Record<MoveGrade['grade'], number> = {
 
 function firstSentence(value: string | null | undefined): string | null {
   if (!value) return null;
-
   const normalized = value.replace(/\s+/g, ' ').trim();
   if (!normalized) return null;
-
   const match = normalized.match(/^[^.!?]+[.!?]?/);
   return (match?.[0] ?? normalized).trim();
 }
@@ -36,15 +34,9 @@ function upperFirst(value: string): string {
 
 function parseFeedbackSentence(value: string | null | undefined): { label: string | null; body: string | null } {
   const sentence = firstSentence(value);
-  if (!sentence) {
-    return { label: null, body: null };
-  }
-
+  if (!sentence) return { label: null, body: null };
   const match = sentence.match(/^([^:.-]+?)(?:\s+move)?\s*[:\-]\s*(.+)$/i);
-  if (!match) {
-    return { label: null, body: sentence };
-  }
-
+  if (!match) return { label: null, body: sentence };
   return {
     label: match[1]?.trim() ?? null,
     body: match[2]?.trim() ?? null,
@@ -61,7 +53,6 @@ function getMoveTheme(moveSan: string, moveNumber: number) {
       risky: false,
     };
   }
-
   if (/^Q/.test(cleaned) && moveNumber <= 10) {
     return {
       positive: 'it creates immediate pressure and asks the engine concrete questions.',
@@ -69,7 +60,6 @@ function getMoveTheme(moveSan: string, moveNumber: number) {
       risky: true,
     };
   }
-
   if (/^K/.test(cleaned)) {
     return {
       positive: 'it adjusts king placement and can sidestep tactical ideas.',
@@ -77,7 +67,6 @@ function getMoveTheme(moveSan: string, moveNumber: number) {
       risky: true,
     };
   }
-
   if (cleaned.includes('+')) {
     return {
       positive: 'it creates direct pressure against the king and narrows the reply set.',
@@ -85,7 +74,6 @@ function getMoveTheme(moveSan: string, moveNumber: number) {
       risky: false,
     };
   }
-
   if (cleaned.includes('x')) {
     return {
       positive: 'it changes the structure and forces the engine to respond to a concrete threat.',
@@ -93,7 +81,6 @@ function getMoveTheme(moveSan: string, moveNumber: number) {
       risky: false,
     };
   }
-
   if (/^[NBR]/.test(cleaned)) {
     return {
       positive: 'it improves piece activity and tightens your coordination.',
@@ -101,7 +88,6 @@ function getMoveTheme(moveSan: string, moveNumber: number) {
       risky: false,
     };
   }
-
   if (/^[ah]/.test(cleaned) && moveNumber <= 10) {
     return {
       positive: 'it gains space on the flank and can support a later attack.',
@@ -109,7 +95,6 @@ function getMoveTheme(moveSan: string, moveNumber: number) {
       risky: true,
     };
   }
-
   if (CENTRAL_PAWN_MOVES.has(cleaned)) {
     return {
       positive: 'it claims central space and opens lines for development.',
@@ -117,7 +102,6 @@ function getMoveTheme(moveSan: string, moveNumber: number) {
       risky: false,
     };
   }
-
   return {
     positive: 'it improves your structure and keeps your pieces flexible.',
     caution: 'it spends time without clearly improving coordination or central control.',
@@ -127,7 +111,6 @@ function getMoveTheme(moveSan: string, moveNumber: number) {
 
 function gradeTone(moveGrade: MoveGrade | null | undefined): string | null {
   if (!moveGrade) return null;
-
   switch (moveGrade.grade) {
     case 'Brilliant':
     case 'Best':
@@ -158,14 +141,10 @@ export function resolveUserMoveQualityLabel({
   previousUserProbability: number;
 }): string {
   const moveGrade = response?.moveGrade ?? response?.move_grade ?? null;
-  if (moveGrade) {
-    return moveGrade.grade;
-  }
+  if (moveGrade) return moveGrade.grade;
 
   const explicit = parseFeedbackSentence(response?.userFeedback ?? response?.user_feedback).label;
-  if (explicit) {
-    return explicit;
-  }
+  if (explicit) return explicit;
 
   const afterMoveProbability = resolveUserMoveWinProbability({
     response,
@@ -176,18 +155,9 @@ export function resolveUserMoveQualityLabel({
   const swing = afterMoveProbability - previousUserProbability;
   const theme = getMoveTheme(moveSan, moveNumber);
 
-  if (theme.risky) {
-    return swing >= 0 ? 'Adventurous' : 'Risky';
-  }
-
-  if (swing >= 5) {
-    return 'Strong';
-  }
-
-  if (swing >= 1) {
-    return 'Good';
-  }
-
+  if (theme.risky) return swing >= 0 ? 'Adventurous' : 'Risky';
+  if (swing >= 5) return 'Strong';
+  if (swing >= 1) return 'Good';
   return 'Inaccurate';
 }
 
@@ -197,11 +167,7 @@ export function clampProbability(value: number): number {
 
 export function toWinProbabilitySplit(user: number): WinProbabilitySplit {
   const clamped = clampProbability(user);
-
-  return {
-    user: clamped,
-    engine: 100 - clamped,
-  };
+  return { user: clamped, engine: 100 - clamped };
 }
 
 export function getResponseWinHistory(response: CouncilResponse | null | undefined): number[] {
@@ -220,7 +186,6 @@ export function resolveLatestUserWinProbability(
     response?.metrics?.winProbability ??
     response?.userWinProbability ??
     response?.user_win_probability;
-
   return clampProbability(explicit ?? fallback);
 }
 
@@ -239,32 +204,22 @@ export function resolveUserMoveWinProbability({
     response?.winProbabilityAfterUserMove ??
     response?.win_probability_after_user_move;
 
-  if (typeof explicit === 'number') {
-    return clampProbability(explicit);
-  }
+  if (typeof explicit === 'number') return clampProbability(explicit);
 
   const history = getResponseWinHistory(response);
-  if (history.length >= 2) {
-    return clampProbability(history[history.length - 2]);
-  }
+  if (history.length >= 2) return clampProbability(history[history.length - 2]);
 
   const cleaned = cleanSan(moveSan);
   const moveGrade = response?.moveGrade ?? response?.move_grade ?? null;
   const gradeSwing = moveGrade ? GRADE_SWINGS[moveGrade.grade] : 0;
   const themeSwing =
-    cleaned === 'O-O' || cleaned === 'O-O-O'
-      ? 4
-      : CENTRAL_PAWN_MOVES.has(cleaned)
-        ? 3
-        : /^[NBR]/.test(cleaned)
-          ? 2
-          : /^Q/.test(cleaned) && moveNumber <= 10
-            ? -4
-            : /^[ah]/.test(cleaned) && moveNumber <= 10
-              ? -3
-              : cleaned.includes('x')
-                ? 1
-                : 0;
+    cleaned === 'O-O' || cleaned === 'O-O-O' ? 4
+    : CENTRAL_PAWN_MOVES.has(cleaned) ? 3
+    : /^[NBR]/.test(cleaned) ? 2
+    : /^Q/.test(cleaned) && moveNumber <= 10 ? -4
+    : /^[ah]/.test(cleaned) && moveNumber <= 10 ? -3
+    : cleaned.includes('x') ? 1
+    : 0;
 
   return clampProbability(previousUserProbability + gradeSwing + themeSwing);
 }
@@ -280,9 +235,15 @@ export function generateUserMoveFeedback({
   moveNumber: number;
   previousUserProbability: number;
 }): string {
-  const explicit = parseFeedbackSentence(response?.userFeedback ?? response?.user_feedback).body;
+  // Priority 1 — real Claude causal explanation from backend
+  const causal = response?.userFeedback ?? null;
+  if (causal) return causal;
+
+  // Priority 2 — any explicit feedback field
+  const explicit = parseFeedbackSentence(response?.user_feedback).body;
   if (explicit) return upperFirst(explicit);
 
+  // Priority 3 — fallback to theme-based generic text
   const moveGrade = response?.moveGrade ?? response?.move_grade ?? null;
   const afterMoveProbability = resolveUserMoveWinProbability({
     response,
@@ -302,11 +263,9 @@ export function generateUserMoveFeedback({
 
 function moveMatches(engineMoveSan: string | null, candidate: TopMove): boolean {
   if (!engineMoveSan) return false;
-
   const cleanedEngine = cleanSan(engineMoveSan);
   const cleanedSan = candidate.san ? cleanSan(candidate.san) : null;
   const cleanedMove = cleanSan(candidate.move);
-
   return cleanedEngine === cleanedSan || cleanedEngine === cleanedMove;
 }
 
@@ -319,26 +278,21 @@ export function generateEngineComment({
   engineMoveSan: string | null;
   topMoves?: TopMove[];
 }): string | null {
+  // use engineComment field (mapped to PV in api.ts)
   const explicit = firstSentence(response?.engineComment ?? response?.engine_comment);
   if (explicit) return explicit;
 
-  const reasoning = firstSentence(
-    response?.engineReasoning ??
-      response?.engine_reasoning ??
-      response?.council?.reasoning ??
-      response?.verdict?.reasoning,
-  );
-  if (reasoning) return reasoning;
+  // use enginePlan
+  const plan = firstSentence(response?.enginePlan ?? response?.engine_plan);
+  if (plan) return plan;
 
+  // use top move description
   const matchingTopMove = topMoves.find((candidate) => moveMatches(engineMoveSan, candidate)) ?? topMoves[0];
   if (matchingTopMove?.description) {
     const label = matchingTopMove.san ?? engineMoveSan ?? matchingTopMove.move;
     return `The engine chooses ${label} because ${lowerFirst(matchingTopMove.description.replace(/\.$/, ''))}.`;
   }
 
-  const plan = firstSentence(response?.enginePlan ?? response?.engine_plan);
-  if (plan) return plan;
-
   if (!engineMoveSan) return null;
-  return `The engine replies with ${engineMoveSan} to keep the position balanced and flexible.`;
+  return `The engine replies with ${engineMoveSan} to keep the position balanced.`;
 }

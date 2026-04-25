@@ -1,5 +1,5 @@
 "use client"
-
+import GameReportModal from "@/components/play/GameReportModal"
 import Image from "next/image"
 import Link from "next/link"
 import { useCallback, useState } from "react"
@@ -81,7 +81,6 @@ function mergeMetrics(
 function parseUci(uci: string | null | undefined): ResolvedMove | null {
   const value = uci?.trim()
   if (!value || value.length < 4) return null
-
   return {
     from: value.slice(0, 2),
     to: value.slice(2, 4),
@@ -102,7 +101,6 @@ function deriveSanFromMove(
       to: move.to,
       promotion: move.promotion ?? "q",
     })
-
     return applied?.san ?? null
   } catch {
     return null
@@ -116,7 +114,6 @@ function inferMoveFromFen(
   try {
     const game = new Chess(beforeFen)
     const candidates = game.moves({ verbose: true })
-
     for (const candidate of candidates) {
       const probe = new Chess(beforeFen)
       const applied = probe.move({
@@ -124,7 +121,6 @@ function inferMoveFromFen(
         to: candidate.to,
         promotion: candidate.promotion ?? "q",
       })
-
       if (applied && probe.fen() === afterFen) {
         return {
           from: candidate.from,
@@ -138,7 +134,6 @@ function inferMoveFromFen(
   } catch {
     return null
   }
-
   return null
 }
 
@@ -150,11 +145,7 @@ function getMoveNumberFromFen(fen: string): number {
 
 function createMoveHistoryTurnId(moveNumber: number): string {
   const uuid = globalThis.crypto?.randomUUID?.()
-
-  if (uuid) {
-    return `move-${moveNumber}-${uuid}`
-  }
-
+  if (uuid) return `move-${moveNumber}-${uuid}`
   return `move-${moveNumber}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
 }
 
@@ -287,14 +278,12 @@ function replacePendingTurn(
   updatedTurn: MoveHistoryTurn
 ): MoveHistoryTurn[] {
   let targetIndex = -1
-
   for (let index = turns.length - 1; index >= 0; index -= 1) {
     if (turns[index]?.id === turnId && turns[index]?.status === "pending") {
       targetIndex = index
       break
     }
   }
-
   if (targetIndex === -1) {
     for (let index = turns.length - 1; index >= 0; index -= 1) {
       if (
@@ -306,9 +295,7 @@ function replacePendingTurn(
       }
     }
   }
-
   if (targetIndex === -1) return turns
-
   return turns.map((turn, index) =>
     index === targetIndex ? updatedTurn : turn
   )
@@ -365,16 +352,14 @@ export default function PlayExperience({
   const [selectedMode, setSelectedMode] = useState<PersonaMode>(initialMode)
   const [responseMode, setResponseMode] = useState<PersonaMode>(initialMode)
   const [gamePhase, setGamePhase] = useState<GamePhase>("your_turn")
+  const [reportOpen, setReportOpen] = useState(false)
 
   const [userLastMove, setUserLastMove] = useState<MoveCoords | null>(null)
   const [engineLastMove, setEngineLastMove] = useState<MoveCoords | null>(null)
   const [userLastMoveSan, setUserLastMoveSan] = useState<string | null>(null)
-  const [engineLastMoveSan, setEngineLastMoveSan] = useState<string | null>(
-    null
-  )
+  const [engineLastMoveSan, setEngineLastMoveSan] = useState<string | null>(null)
 
-  const [councilResponse, setCouncilResponse] =
-    useState<CouncilResponse | null>(null)
+  const [councilResponse, setCouncilResponse] = useState<CouncilResponse | null>(null)
   const [currentWinProbability, setCurrentWinProbability] = useState(50)
   const [moveHistory, setMoveHistory] = useState<MoveHistoryTurn[]>([])
 
@@ -402,16 +387,11 @@ export default function PlayExperience({
           to: resolvedEngineMove.to,
           promotion: resolvedEngineMove.promotion ?? "q",
         })
-
-        if (applied) {
-          finalGame = afterEngine
-        }
+        if (applied) finalGame = afterEngine
       }
 
-      const resolvedUserMoveSan =
-        response.userMoveSan ?? turnContext.fallbackUserSan
-      const resolvedEngineMoveSan =
-        response.engineMoveSan ?? resolvedEngineMove?.san ?? null
+      const resolvedUserMoveSan = response.userMoveSan ?? turnContext.fallbackUserSan
+      const resolvedEngineMoveSan = response.engineMoveSan ?? resolvedEngineMove?.san ?? null
       const userMoveProbability = resolveUserMoveWinProbability({
         response,
         previousUserProbability: turnContext.previousUserProbability,
@@ -442,19 +422,11 @@ export default function PlayExperience({
 
       setGame(finalGame)
       setEngineLastMove(
-        resolvedEngineMove
-          ? {
-              from: resolvedEngineMove.from,
-              to: resolvedEngineMove.to,
-            }
-          : null
+        resolvedEngineMove ? { from: resolvedEngineMove.from, to: resolvedEngineMove.to } : null
       )
       setEngineLastMoveSan(resolvedEngineMoveSan)
       setResponseMode(resolvedReplyMode)
-      setCouncilResponse({
-        ...response,
-        fen: response.fen ?? finalGame.fen(),
-      })
+      setCouncilResponse({ ...response, fen: response.fen ?? finalGame.fen() })
       setCurrentWinProbability(finalUserProbability)
       setMoveHistory((previousTurns) =>
         replacePendingTurn(previousTurns, turnContext.turnId, {
@@ -499,11 +471,6 @@ export default function PlayExperience({
           moveNumber,
         })
       )
-      const provisionalFeedback = generateUserMoveFeedback({
-        moveSan: fallbackUserSan,
-        moveNumber,
-        previousUserProbability,
-      })
       const provisionalQuality = resolveUserMoveQualityLabel({
         previousUserProbability,
         moveSan: fallbackUserSan,
@@ -526,7 +493,7 @@ export default function PlayExperience({
           moveNumber,
           userMove: fallbackUserSan,
           userMoveQuality: provisionalQuality,
-          userFeedback: provisionalFeedback,
+          userFeedback: "",
           userWinProbability: toWinProbabilitySplit(provisionalUserProbability),
           engineMode: modeForReply,
           engineMove: null,
@@ -643,23 +610,18 @@ export default function PlayExperience({
 
   const metrics = mergeMetrics(councilResponse?.metrics)
   const isLoading = gamePhase === "engine_thinking"
-  const userMoveDisplay =
-    userLastMoveSan ?? councilResponse?.userMoveSan ?? null
-  const engineMoveDisplay =
-    engineLastMoveSan ?? councilResponse?.engineMoveSan ?? null
+  const userMoveDisplay = userLastMoveSan ?? councilResponse?.userMoveSan ?? null
+  const engineMoveDisplay = engineLastMoveSan ?? councilResponse?.engineMoveSan ?? null
   const currentSideToMove = game.turn() === "w" ? "White" : "Black"
   const selectedPersona = getPersona(selectedMode)
   const replyPersona = getPersona(responseMode)
   const displayPersona = getPersona(
     gamePhase === "engine_thinking" ? responseMode : selectedMode
   )
-  const displayAccent =
-    displayPersona.id === "council" ? "#efd6ae" : displayPersona.accentColor
-  const railAccent =
-    displayPersona.id === "council" ? "#201814" : displayPersona.accentColor
+  const displayAccent = displayPersona.id === "council" ? "#efd6ae" : displayPersona.accentColor
+  const railAccent = displayPersona.id === "council" ? "#201814" : displayPersona.accentColor
   const winSplit = toWinProbabilitySplit(currentWinProbability)
-  const moveGrade =
-    councilResponse?.moveGrade ?? councilResponse?.move_grade ?? null
+  const moveGrade = councilResponse?.moveGrade ?? councilResponse?.move_grade ?? null
   const statusCopy = getStatusCopy(
     gamePhase,
     selectedMode,
@@ -670,16 +632,8 @@ export default function PlayExperience({
   const boardMetaItems = [
     { label: "Turn", value: currentSideToMove, accent: "#7b6758" },
     { label: "Last", value: userMoveDisplay ?? "--", accent: "#537ea8" },
-    {
-      label: "Reply",
-      value: formatReplyMove(engineMoveDisplay),
-      accent: railAccent,
-    },
-    {
-      label: "Grade",
-      value: moveGrade?.grade ?? "Live",
-      accent: moveGrade ? railAccent : "#7b6758",
-    },
+    { label: "Reply", value: formatReplyMove(engineMoveDisplay), accent: railAccent },
+    { label: "Grade", value: moveGrade?.grade ?? "Live", accent: moveGrade ? railAccent : "#7b6758" },
   ]
 
   return (
@@ -702,9 +656,7 @@ export default function PlayExperience({
             </div>
 
             <div className="min-w-0 lg:px-2">
-              <p className="council-kicker text-[rgba(255,247,234,0.5)]">
-                Board Room
-              </p>
+              <p className="council-kicker text-[rgba(255,247,234,0.5)]">Board Room</p>
               <h1 className="mt-2 text-2xl font-black tracking-[-0.05em] text-[var(--brand-cream-strong)] md:text-[2rem]">
                 {statusCopy.title}
               </h1>
@@ -717,17 +669,33 @@ export default function PlayExperience({
               <div className="flex items-center gap-3 rounded-[1.35rem] border border-[rgba(255,247,234,0.12)] bg-[rgba(255,247,234,0.06)] px-3 py-2.5">
                 <div
                   className="relative h-11 w-11 overflow-hidden rounded-full border border-[rgba(255,247,234,0.14)]"
-                  style={{
-                    boxShadow: `0 0 0 1px ${displayAccent}22`,
-                  }}
+                  style={{ boxShadow: `0 0 0 1px ${displayAccent}22` }}
                 >
-                  <Image
-                    src={selectedPersona.avatar}
-                    alt={`${selectedPersona.profileName} avatar`}
-                    fill
-                    sizes="44px"
-                    className="object-cover"
-                  />
+                  {selectedPersona.avatar ? (
+                    <Image
+                      src={selectedPersona.avatar}
+                      alt={`${selectedPersona.profileName} avatar`}
+                      fill
+                      sizes="44px"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        backgroundColor: selectedPersona.accentColor,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "16px",
+                        fontWeight: 700,
+                        color: "#fff",
+                      }}
+                    >
+                      {selectedPersona.nickname[0]}
+                    </div>
+                  )}
                 </div>
                 <div className="min-w-0">
                   <p className="text-[10px] font-semibold tracking-[0.18em] text-[rgba(255,247,234,0.46)] uppercase">
@@ -806,7 +774,16 @@ export default function PlayExperience({
 
               <div className="mt-3 flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
                 <EngineStatusStrip metrics={metrics} />
-                <DemoControls onDemo={loadDemo} onReset={resetBoard} />
+                <div className="flex flex-wrap items-center gap-2">
+                  <DemoControls onDemo={loadDemo} onReset={resetBoard} />
+                  <button
+                    type="button"
+                    onClick={() => setReportOpen(true)}
+                    className="inline-flex items-center gap-2 rounded-full border border-[rgba(32,24,20,0.12)] bg-[rgba(255,248,237,0.76)] px-4 py-2 text-[11px] font-semibold tracking-[0.22em] text-[var(--brand-ink)] uppercase transition-colors hover:bg-[rgba(255,255,255,0.94)]"
+                  >
+                    Game Report
+                  </button>
+                </div>
                 <details className="text-[11px] font-semibold tracking-[0.18em] text-[rgba(32,24,20,0.52)] uppercase">
                   <summary className="cursor-pointer rounded-full border border-[rgba(32,24,20,0.08)] bg-[rgba(255,255,255,0.46)] px-3 py-1.5">
                     FEN stays live
@@ -842,6 +819,11 @@ export default function PlayExperience({
           </aside>
         </section>
       </main>
+
+      <GameReportModal
+        open={reportOpen}
+        onClose={() => setReportOpen(false)}
+      />
     </div>
   )
 }
