@@ -1,0 +1,14 @@
+<svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="firefighter-bg" x1="28" y1="20" x2="130" y2="140" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FB7185" />
+      <stop offset="1" stop-color="#991B1B" />
+    </linearGradient>
+  </defs>
+  <rect width="160" height="160" rx="80" fill="#050816" />
+  <circle cx="80" cy="80" r="72" fill="url(#firefighter-bg)" />
+  <circle cx="80" cy="80" r="58" fill="#111827" fill-opacity="0.78" />
+  <path d="M59 109C59 90 70 75 89 67L79 57C77 55 77 52 80 50L96 39C99 37 103 39 103 43V58C103 60 104 62 106 63C114 68 119 77 119 88C119 102 108 114 93 118L89 122H67L63 117C60 115 59 112 59 109Z" fill="#FDE68A" />
+  <path d="M89 67L101 74L92 81L102 89L93 97H77L75 104H98" stroke="#0F172A" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+  <text x="80" y="133" text-anchor="middle" fill="#F8FAFC" font-family="Georgia, serif" font-size="22" font-weight="700">T</text>
+</svg>

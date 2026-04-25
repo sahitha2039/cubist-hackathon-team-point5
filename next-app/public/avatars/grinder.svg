@@ -1,0 +1,15 @@
+<svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grinder-bg" x1="24" y1="18" x2="136" y2="142" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FCD34D" />
+      <stop offset="1" stop-color="#B45309" />
+    </linearGradient>
+  </defs>
+  <rect width="160" height="160" rx="80" fill="#050816" />
+  <circle cx="80" cy="80" r="72" fill="url(#grinder-bg)" />
+  <circle cx="80" cy="80" r="58" fill="#111827" fill-opacity="0.8" />
+  <path d="M80 42L85 53H96L87 61L90 73L80 67L70 73L73 61L64 53H75L80 42Z" fill="#FEF3C7" />
+  <path d="M63 82C63 72 71 64 80 64C89 64 97 72 97 82V91C97 99 92 106 84 109V117H76V109C68 106 63 99 63 91V82Z" fill="#FDE68A" />
+  <path d="M59 117H101" stroke="#78350F" stroke-width="6" stroke-linecap="round" />
+  <text x="80" y="133" text-anchor="middle" fill="#F8FAFC" font-family="Georgia, serif" font-size="22" font-weight="700">C</text>
+</svg>

@@ -7,63 +7,82 @@ export const DEMO_USER_MOVE = { from: 'g1', to: 'f3' };   // Nf3
 export const DEMO_ENGINE_MOVE = { from: 'e8', to: 'g8' }; // O-O
 
 export const DEMO_RESPONSE: CouncilResponse = {
-  bestMove: 'f1e2',
+  bestMove: 'e8g8',
   mode: 'council',
   fen: DEMO_FEN,
   engineMove: 'e8g8',
   engineMoveSan: 'O-O',
   engineReasoning:
-    'Black castles to secure king safety while keeping all future plans open — a principled response to White\'s setup.',
-  enginePlan: 'Prepare ...e5 or ...c5 break depending on White\'s response',
+    'Black castles to secure king safety while keeping the central breaks ...e5 and ...c5 available on the next turn.',
+  enginePlan: 'Castle first, then challenge the center with ...e5 or create queenside imbalance with ...c5.',
   userMoveSan: 'Nf3',
+  userFeedback: 'Good move: it develops a piece, supports the center, and prepares castling.',
+  engineComment: 'The engine castles to secure the king and keep both ...e5 and ...c5 available.',
+  userWinProbability: 56,
+  winProbabilityAfterUserMove: 54,
   topMoves: [
-    { move: 'f1e2', san: 'Be2', eval: 28, description: 'Completes development and prepares kingside castling' },
-    { move: 'f2f4', san: 'f4', eval: 22, description: 'Seizes kingside space and threatens f5 expansion' },
-    { move: 'c1e3', san: 'Be3', eval: 20, description: 'Controls e3, restrains the ...e5 counterplay' },
+    {
+      move: 'e8g8',
+      san: 'O-O',
+      eval: 28,
+      description: 'Secures the king and keeps both ...e5 and ...c5 available.',
+    },
+    {
+      move: 'e7e5',
+      san: 'e5',
+      eval: 22,
+      description: 'Challenges the center immediately and opens tactical lines.',
+    },
+    {
+      move: 'c7c5',
+      san: 'c5',
+      eval: 20,
+      description: 'Creates asymmetry and prepares queenside counterplay.',
+    },
   ],
   opinions: [
     {
       persona: 'firefighter',
-      recommendedMove: 'f4',
+      recommendedMove: '...e5',
       confidence: 72,
       reasoning:
-        'Launch the kingside pawn storm immediately! f4 seizes space and threatens f5, forcing Black to react defensively.',
+        'Strike the center now with ...e5 and force White to solve problems before the position settles.',
       agrees: false,
     },
     {
       persona: 'optimizer',
-      recommendedMove: 'Be2',
+      recommendedMove: '...O-O',
       confidence: 88,
       reasoning:
-        'Be2 completes development with precision. Castle next turn, then steadily improve every piece before committing.',
+        'Castle first. It improves king safety, preserves flexibility, and keeps every strategic plan available.',
       agrees: true,
     },
     {
       persona: 'wall',
-      recommendedMove: 'Be3',
+      recommendedMove: '...c6',
       confidence: 79,
       reasoning:
-        "Be3 secures the key diagonal and prevents Black's ...e5 break. Restricts opponent options before any action.",
+        'Stabilize the center with ...c6, keep White contained, and counter only after the threats are neutralized.',
       agrees: false,
     },
     {
       persona: 'grinder',
-      recommendedMove: 'Be2',
+      recommendedMove: '...O-O',
       confidence: 91,
       reasoning:
-        'Be2 is objectively the most accurate move. Prepares O-O, keeps maximum flexibility, and avoids any concessions.',
+        '...O-O is the cleanest technical move. It improves the king, changes nothing for the worse, and keeps the position easy to handle.',
       agrees: true,
     },
   ],
   verdict: {
-    move: 'Be2',
+    move: 'O-O',
     votes: 2,
     totalVotes: 4,
     confidence: 84,
     dissent:
-      'The Firefighter advocates f4; The Wall prefers Be3. Both dissent from the committee decision.',
+      'The Firefighter wanted ...e5 immediately, while The Wall preferred ...c6 first.',
     reasoning:
-      'Be2 carries the vote. It completes development, enables immediate castling, and maintains all strategic options — avoiding the premature commitments of f4 and Be3.',
+      'Castling carried the vote because it improves king safety without declaring the central structure too early. The engine keeps maximum flexibility for the next decision.',
   },
   metrics: {
     depth: 18,

@@ -72,10 +72,9 @@ interface BarMetricProps {
   value: number;
   color: string;
   suffix?: string;
-  low?: boolean;
 }
 
-function BarMetric({ label, value, color, suffix = '%', low = false }: BarMetricProps) {
+function BarMetric({ label, value, color, suffix = '%' }: BarMetricProps) {
   const count = useCountUp(value);
 
   return (

@@ -8,89 +8,95 @@ import type { PersonaMode } from '@/lib/types';
 interface PersonalitySelectorProps {
   activeMode: PersonaMode;
   onSelect: (mode: PersonaMode) => void;
+  disabled?: boolean;
 }
 
-export default function PersonalitySelector({ activeMode, onSelect }: PersonalitySelectorProps) {
-  const active = getPersona(activeMode);
+export default function PersonalitySelector({
+  activeMode,
+  onSelect,
+  disabled = false,
+}: PersonalitySelectorProps) {
+  const activePersona = getPersona(activeMode);
 
   return (
-    <div className="flex flex-col gap-3">
-      {/* Section label */}
+    <section className="glass-panel rounded-[28px] p-5 md:p-6">
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.05 }}
-        className="flex items-center gap-2"
-      >
-        <span className="text-xs font-mono font-semibold uppercase tracking-widest text-slate-500">
-          Choose Your Opponent
-        </span>
-        <div className="h-px flex-1 bg-white/5" />
-      </motion.div>
-
-      {/* "Currently playing against" banner */}
-      <motion.div
-        layout
-        initial={{ opacity: 0, y: -6 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="flex items-center justify-between rounded-xl px-4 py-3"
-        style={{
-          backgroundColor: `${active.accentColor}0c`,
-          border: `1px solid ${active.accentColor}30`,
-        }}
+        transition={{ duration: 0.45 }}
+        className="rounded-[24px] border border-white/8 bg-slate-950/45 p-5"
       >
-        <div>
-          <p className="text-[10px] font-mono font-semibold uppercase tracking-widest text-slate-500">
-            Currently playing against
-          </p>
-          <p className="mt-0.5 text-sm font-bold" style={{ color: active.accentColor }}>
-            {active.nickname}
-          </p>
-          <p className="text-[11px] text-slate-500 mt-0.5">{active.copy}</p>
-        </div>
-        <div
-          className="flex h-10 w-10 items-center justify-center rounded-lg"
-          style={{
-            backgroundColor: `${active.accentColor}18`,
-            border: `1px solid ${active.accentColor}30`,
-            color: active.accentColor,
-            boxShadow: `0 0 12px ${active.glowColor}`,
-          }}
-        >
-          <span className="text-lg">
-            {{
-              firefighter: '🔥',
-              optimizer: '🎯',
-              wall: '🛡',
-              grinder: '⚙️',
-              council: '👑',
-            }[activeMode]}
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="max-w-2xl">
+            <p className="text-[11px] font-mono font-semibold uppercase tracking-[0.28em] text-slate-500">
+              Choose Engine Mind
+            </p>
+            <h2 className="mt-2 text-2xl font-bold text-white">Pick the opponent brain behind the next reply.</h2>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
+              Selecting a personality does not make a move. It tells the engine which mind should
+              answer after your next move on the board.
+            </p>
+          </div>
+
+          <span
+            className="rounded-full px-3 py-1 text-[11px] font-semibold"
+            style={{
+              backgroundColor: `${activePersona.accentColor}18`,
+              color: activePersona.accentColor,
+              border: `1px solid ${activePersona.accentColor}35`,
+            }}
+          >
+            {disabled ? 'Reply locked in progress' : `Active Opponent: ${activePersona.nickname}`}
           </span>
         </div>
+
+        <div
+          className="mt-5 rounded-[22px] px-4 py-4"
+          style={{
+            backgroundColor: `${activePersona.accentColor}0f`,
+            border: `1px solid ${activePersona.accentColor}2d`,
+            boxShadow: `0 0 28px ${activePersona.glowColor}`,
+          }}
+        >
+          <p className="text-[11px] font-mono font-semibold uppercase tracking-[0.24em] text-slate-500">
+            Current Matchup
+          </p>
+          <p className="mt-2 text-lg font-bold text-white">
+            Currently playing against: <span style={{ color: activePersona.accentColor }}>{activePersona.nickname}</span>
+          </p>
+          <p className="mt-1 text-sm leading-6 text-slate-300">
+            Make your move to trigger a reply from {activePersona.nickname}. If you switch minds now,
+            the next engine response will use the newly selected personality.
+          </p>
+          {disabled && (
+            <p className="mt-2 text-sm text-slate-400">
+              Opponent switching is temporarily locked while the current reply is being calculated.
+            </p>
+          )}
+        </div>
       </motion.div>
 
-      {/* 2×2 grid */}
-      <div className="grid grid-cols-2 gap-3">
-        {PERSONAS.map((persona, i) => (
+      <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
+        {PERSONAS.map((persona, index) => (
           <PersonalityCard
             key={persona.id}
             persona={persona}
             isActive={activeMode === persona.id}
-            index={i}
+            index={index}
             onClick={() => onSelect(persona.id)}
+            disabled={disabled}
           />
         ))}
-      </div>
 
-      {/* Council — full width */}
-      <PersonalityCard
-        persona={COUNCIL_PERSONA}
-        isActive={activeMode === 'council'}
-        index={PERSONAS.length}
-        onClick={() => onSelect('council')}
-        fullWidth
-      />
-    </div>
+        <PersonalityCard
+          persona={COUNCIL_PERSONA}
+          isActive={activeMode === 'council'}
+          index={PERSONAS.length}
+          onClick={() => onSelect('council')}
+          disabled={disabled}
+          fullWidth
+        />
+      </div>
+    </section>
   );
 }

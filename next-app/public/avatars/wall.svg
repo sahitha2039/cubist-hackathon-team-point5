@@ -1,0 +1,15 @@
+<svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="wall-bg" x1="26" y1="18" x2="134" y2="142" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6EE7B7" />
+      <stop offset="1" stop-color="#047857" />
+    </linearGradient>
+  </defs>
+  <rect width="160" height="160" rx="80" fill="#050816" />
+  <circle cx="80" cy="80" r="72" fill="url(#wall-bg)" />
+  <circle cx="80" cy="80" r="58" fill="#0F172A" fill-opacity="0.8" />
+  <path d="M60 53H70V61H76V53H84V61H90V53H100V73H95V102H105V117H55V102H65V73H60V53Z" fill="#D1FAE5" />
+  <path d="M65 80H95" stroke="#064E3B" stroke-width="5" stroke-linecap="round" />
+  <path d="M70 95H90" stroke="#064E3B" stroke-width="5" stroke-linecap="round" />
+  <text x="80" y="133" text-anchor="middle" fill="#F8FAFC" font-family="Georgia, serif" font-size="22" font-weight="700">K</text>
+</svg>
