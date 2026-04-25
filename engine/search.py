@@ -2,6 +2,8 @@ import chess
 from engine.eval import evaluate
 
 def _minimax(board, depth, alpha, beta, maximizing):
+    global _node_count
+    _node_count += 1
     if board.is_checkmate():
         return -100000 if maximizing else 100000
     if board.is_stalemate() or board.is_insufficient_material():
@@ -33,10 +35,12 @@ def _minimax(board, depth, alpha, beta, maximizing):
         return min_score
 
 _current_mode = "balanced"
+_node_count = 0
 
 def find_best_move(board, depth=4, mode="balanced"):
-    global _current_mode
+    global _current_mode, _node_count
     _current_mode = mode
+    _node_count = 0
 
     best_move = None
     best_score = -float("inf")
@@ -61,4 +65,5 @@ def find_best_move(board, depth=4, mode="balanced"):
                 best_move = move
             beta = min(beta, score)
 
+    print(f"[search] mode={mode} depth={depth} nodes={_node_count}")
     return best_move.uci() if best_move else None
