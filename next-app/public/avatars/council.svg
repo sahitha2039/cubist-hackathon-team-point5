@@ -1,0 +1,17 @@
+<svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="council-bg" x1="22" y1="18" x2="136" y2="142" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C4B5FD" />
+      <stop offset="1" stop-color="#6D28D9" />
+    </linearGradient>
+  </defs>
+  <rect width="160" height="160" rx="80" fill="#050816" />
+  <circle cx="80" cy="80" r="72" fill="url(#council-bg)" />
+  <circle cx="80" cy="80" r="58" fill="#111827" fill-opacity="0.8" />
+  <path d="M54 104L60 58L72 74L80 54L88 74L100 58L106 104H54Z" fill="#EDE9FE" />
+  <path d="M61 104H99V117H61V104Z" fill="#DDD6FE" />
+  <circle cx="60" cy="53" r="5" fill="#F8FAFC" />
+  <circle cx="80" cy="48" r="5" fill="#F8FAFC" />
+  <circle cx="100" cy="53" r="5" fill="#F8FAFC" />
+  <text x="80" y="133" text-anchor="middle" fill="#F8FAFC" font-family="Georgia, serif" font-size="22" font-weight="700">C</text>
+</svg>

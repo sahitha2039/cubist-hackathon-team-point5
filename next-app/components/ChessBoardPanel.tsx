@@ -1,244 +1,197 @@
-'use client';
+"use client"
 
-import { motion, AnimatePresence } from 'motion/react';
-import { Chessboard } from 'react-chessboard';
-import { getPersona } from '@/lib/personas';
-import type { PersonaMode, MoveGrade, GamePhase } from '@/lib/types';
+import { type CSSProperties } from "react"
+import { AnimatePresence, motion } from "motion/react"
+import { Chessboard } from "react-chessboard"
+
+import { getPersona } from "@/lib/personas"
+import type { GamePhase, MoveGrade, PersonaMode } from "@/lib/types"
 
 const GRADE_COLORS: Record<string, string> = {
-  Brilliant: '#a855f7',
-  Best: '#22c55e',
-  Excellent: '#3b82f6',
-  Good: '#6366f1',
-  Inaccuracy: '#f59e0b',
-  Mistake: '#f97316',
-  Blunder: '#ef4444',
-};
+  Brilliant: "#c97f8b",
+  Best: "#537ea8",
+  Excellent: "#537ea8",
+  Good: "#be8b3d",
+  Inaccuracy: "#c46a55",
+  Mistake: "#c75444",
+  Blunder: "#a13e31",
+}
 
 const GRADE_SYMBOLS: Record<string, string> = {
-  Brilliant: '!!',
-  Best: '★',
-  Excellent: '!',
-  Good: '⊕',
-  Inaccuracy: '?!',
-  Mistake: '?',
-  Blunder: '??',
-};
+  Brilliant: "!!",
+  Best: "!",
+  Excellent: "+",
+  Good: "=",
+  Inaccuracy: "?!",
+  Mistake: "?",
+  Blunder: "??",
+}
 
 interface ChessBoardPanelProps {
-  fen: string;
-  activeMode: PersonaMode;
-  userLastMove: { from: string; to: string } | null;
-  engineLastMove: { from: string; to: string } | null;
-  moveGrade: MoveGrade | null;
-  onMove: (from: string, to: string) => boolean;
-  gamePhase: GamePhase;
-  engineMoveSan?: string | null;
+  fen: string
+  activeMode: PersonaMode
+  responseMode: PersonaMode
+  userLastMove: { from: string; to: string } | null
+  engineLastMove: { from: string; to: string } | null
+  moveGrade: MoveGrade | null
+  onMove: (from: string, to: string) => boolean
+  gamePhase: GamePhase
 }
 
 export default function ChessBoardPanel({
   fen,
   activeMode,
+  responseMode,
   userLastMove,
   engineLastMove,
   moveGrade,
   onMove,
   gamePhase,
-  engineMoveSan,
 }: ChessBoardPanelProps) {
-  const persona = getPersona(activeMode);
-  const isLoading = gamePhase === 'engine_thinking';
+  const persona = getPersona(activeMode)
+  const replyPersona = getPersona(responseMode)
+  const accent = persona.id === "council" ? "#201814" : persona.accentColor
+  const replyAccent =
+    replyPersona.id === "council" ? "#201814" : replyPersona.accentColor
+  const isLoading = gamePhase === "engine_thinking"
+  const gradeColor = moveGrade
+    ? (GRADE_COLORS[moveGrade.grade] ?? "#8f7d65")
+    : null
+  const gradeSymbol = moveGrade ? (GRADE_SYMBOLS[moveGrade.grade] ?? "") : null
 
-  // Blue for user moves, gold for engine moves
-  const squareStyles: Record<string, React.CSSProperties> = {};
+  const squareStyles: Record<string, CSSProperties> = {}
   if (userLastMove) {
-    squareStyles[userLastMove.from] = { backgroundColor: 'rgba(59,130,246,0.22)' };
-    squareStyles[userLastMove.to] = { backgroundColor: 'rgba(59,130,246,0.4)' };
+    squareStyles[userLastMove.from] = {
+      background:
+        "radial-gradient(circle, rgba(83,126,168,0.18) 0%, rgba(83,126,168,0.1) 58%, rgba(255,243,223,0.12) 100%)",
+      boxShadow:
+        "inset 0 0 0 2px rgba(83,126,168,0.55), 0 0 18px rgba(83,126,168,0.18)",
+    }
+    squareStyles[userLastMove.to] = {
+      background:
+        "radial-gradient(circle, rgba(83,126,168,0.3) 0%, rgba(83,126,168,0.12) 60%, rgba(255,243,223,0.12) 100%)",
+      boxShadow:
+        "inset 0 0 0 2px rgba(83,126,168,0.66), 0 0 24px rgba(83,126,168,0.24)",
+    }
   }
+
   if (engineLastMove) {
-    squareStyles[engineLastMove.from] = { backgroundColor: 'rgba(245,158,11,0.22)' };
-    squareStyles[engineLastMove.to] = { backgroundColor: 'rgba(245,158,11,0.42)' };
+    squareStyles[engineLastMove.from] = {
+      background: `linear-gradient(135deg, ${replyAccent}18, rgba(255,243,223,0.16))`,
+      boxShadow: `inset 0 0 0 2px ${replyAccent}55, 0 0 18px ${replyAccent}26`,
+    }
+    squareStyles[engineLastMove.to] = {
+      background: `linear-gradient(135deg, ${replyAccent}28, rgba(255,243,223,0.2))`,
+      boxShadow: `inset 0 0 0 2px ${replyAccent}70, 0 0 24px ${replyAccent}2a`,
+    }
   }
 
-  function onDrop({ sourceSquare, targetSquare }: { piece: unknown; sourceSquare: string; targetSquare: string | null }): boolean {
-    if (isLoading || !targetSquare) return false;
-    return onMove(sourceSquare, targetSquare);
+  function onDrop({
+    sourceSquare,
+    targetSquare,
+  }: {
+    sourceSquare: string
+    targetSquare: string | null
+  }): boolean {
+    if (isLoading || !targetSquare) return false
+    return onMove(sourceSquare, targetSquare)
   }
-
-  const gradeColor = moveGrade ? GRADE_COLORS[moveGrade.grade] ?? '#94a3b8' : null;
-  const gradeSymbol = moveGrade ? GRADE_SYMBOLS[moveGrade.grade] ?? '' : null;
-  const isBadMove = moveGrade?.grade === 'Mistake' || moveGrade?.grade === 'Blunder';
 
   return (
-    <div className="flex flex-col gap-3">
-      {/* Turn indicator strip */}
-      <AnimatePresence mode="wait">
-        {gamePhase === 'selecting' && (
-          <motion.div
-            key="selecting"
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            className="flex items-center gap-2 rounded-lg border border-white/7 bg-white/3 px-3 py-2"
-          >
-            <span className="text-slate-500 text-sm">←</span>
-            <p className="text-sm text-slate-400">
-              Select an opponent on the right, then make your move.
-            </p>
-          </motion.div>
-        )}
+    <section className="council-panel relative flex min-h-0 flex-1 items-center justify-center p-3 md:p-4">
+      {gradeColor && moveGrade ? (
+        <div className="pointer-events-none absolute top-3 right-3 z-20 md:top-4 md:right-4">
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={`${moveGrade.move}-${moveGrade.grade}`}
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              className="inline-flex rounded-full px-3 py-1 text-[10px] font-bold tracking-[0.18em] uppercase shadow-[0_10px_24px_rgba(32,24,20,0.08)]"
+              style={{
+                backgroundColor: "rgba(255,248,237,0.9)",
+                color: gradeColor,
+                border: `1px solid ${gradeColor}28`,
+              }}
+            >
+              {gradeSymbol} {moveGrade.grade}
+            </motion.span>
+          </AnimatePresence>
+        </div>
+      ) : null}
 
-        {gamePhase === 'your_turn' && (
-          <motion.div
-            key="your_turn"
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            className="flex items-center gap-2.5 rounded-lg px-3 py-2"
-            style={{ backgroundColor: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)' }}
-          >
-            <motion.div
-              animate={{ scale: [1, 1.3, 1] }}
-              transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-              className="h-2 w-2 rounded-full bg-blue-400"
-            />
-            <p className="text-sm font-medium text-blue-300">
-              Your turn — drag a piece to challenge{' '}
-              <span style={{ color: persona.accentColor }}>{persona.nickname}</span>
-            </p>
-          </motion.div>
-        )}
-
-        {gamePhase === 'engine_thinking' && (
-          <motion.div
-            key="thinking"
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            className="flex items-center gap-2.5 rounded-lg px-3 py-2"
-            style={{
-              backgroundColor: `${persona.accentColor}10`,
-              border: `1px solid ${persona.accentColor}25`,
-            }}
-          >
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 1.2, ease: 'linear' }}
-              className="h-4 w-4 rounded-full border-2 border-t-transparent"
-              style={{ borderColor: `${persona.accentColor}40`, borderTopColor: persona.accentColor }}
-            />
-            <p className="text-sm font-medium" style={{ color: `${persona.accentColor}cc` }}>
-              {persona.thinkingText}
-            </p>
-          </motion.div>
-        )}
-
-        {gamePhase === 'engine_replied' && (
-          <motion.div
-            key="replied"
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            className="flex items-center justify-between rounded-lg px-3 py-2"
-            style={{ backgroundColor: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)' }}
-          >
-            <div className="flex items-center gap-2.5">
-              <span className="text-amber-400">✓</span>
-              <p className="text-sm font-medium text-amber-300">
-                {persona.nickname} replied
-                {engineMoveSan ? (
-                  <>
-                    :{' '}
-                    <span className="font-mono font-bold text-white">…{engineMoveSan}</span>
-                  </>
-                ) : ''}
-              </p>
-            </div>
-
-            {/* User move grade */}
-            {gradeColor && (
-              <span
-                className="rounded px-2 py-0.5 font-mono text-xs font-bold"
-                style={{
-                  backgroundColor: `${gradeColor}20`,
-                  color: isBadMove ? gradeColor : gradeColor,
-                  border: `1px solid ${gradeColor}30`,
-                  boxShadow: isBadMove ? `0 0 8px ${gradeColor}40` : undefined,
-                }}
-              >
-                Your move: {gradeSymbol} {moveGrade?.grade}
-              </span>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Board border matches active persona */}
-      <div className="relative">
+      <div className="relative flex h-full w-full items-center justify-center">
         <div
-          className="overflow-hidden rounded-xl"
+          className="relative w-full max-w-[42rem]"
           style={{
-            boxShadow: `0 0 0 1px ${persona.accentColor}28, 0 0 32px rgba(0,0,0,0.5)`,
+            maxWidth: "min(42rem, max(18rem, calc(100dvh - 19rem)))",
           }}
         >
-          <Chessboard
-            options={{
-              position: fen,
-              onPieceDrop: onDrop,
-              darkSquareStyle: { backgroundColor: '#1a2840' },
-              lightSquareStyle: { backgroundColor: '#283d55' },
-              boardStyle: { borderRadius: '12px', width: '100%' },
-              squareStyles: squareStyles,
-              allowDrawingArrows: true,
-              dropSquareStyle: { backgroundColor: 'rgba(99,102,241,0.4)' },
+          <div
+            className="overflow-hidden rounded-[1.9rem] border border-[rgba(32,24,20,0.08)] bg-[rgba(255,255,255,0.72)] p-2 md:p-2.5"
+            style={{
+              boxShadow: `0 0 0 1px ${accent}14, 0 24px 54px rgba(32,24,20,0.12)`,
             }}
-          />
+          >
+            <Chessboard
+              options={{
+                position: fen,
+                onPieceDrop: onDrop,
+                darkSquareStyle: { backgroundColor: "#8fa1b2" },
+                lightSquareStyle: { backgroundColor: "#f2e4cb" },
+                boardStyle: { borderRadius: "24px", width: "100%" },
+                squareStyles,
+                allowDrawingArrows: true,
+                dropSquareStyle: { backgroundColor: "rgba(199,84,68,0.28)" },
+              }}
+            />
+          </div>
         </div>
 
-        {/* Loading overlay */}
-        {isLoading && (
+        {isLoading ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-xl"
-            style={{ backgroundColor: 'rgba(7,7,15,0.8)', backdropFilter: 'blur(3px)' }}
+            className="absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-[1.8rem]"
+            style={{
+              backgroundColor: "rgba(255,248,237,0.72)",
+              backdropFilter: "blur(4px)",
+            }}
           >
             <motion.div
               animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}
-              className="h-9 w-9 rounded-full border-2 border-t-transparent"
-              style={{ borderColor: `${persona.accentColor}30`, borderTopColor: persona.accentColor }}
+              transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
+              className="h-12 w-12 rounded-full border-2 border-t-transparent"
+              style={{
+                borderColor: `${replyAccent}3a`,
+                borderTopColor: replyAccent,
+              }}
             />
-            <p className="font-mono text-sm" style={{ color: `${persona.accentColor}bb` }}>
-              {persona.thinkingText}
+            <p
+              className="max-w-sm text-center font-mono text-sm leading-7"
+              style={{ color: replyAccent }}
+            >
+              {replyPersona.thinkingText}
             </p>
-            <div className="flex gap-1.5">
-              {[0, 1, 2].map((i) => (
+            <div className="flex gap-2">
+              {[0, 1, 2].map((dot) => (
                 <motion.div
-                  key={i}
-                  animate={{ opacity: [0.2, 1, 0.2] }}
-                  transition={{ repeat: Infinity, duration: 1.2, delay: i * 0.22 }}
-                  className="h-1.5 w-1.5 rounded-full"
-                  style={{ backgroundColor: persona.accentColor }}
+                  key={dot}
+                  animate={{ opacity: [0.25, 1, 0.25], y: [0, -3, 0] }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 1.1,
+                    delay: dot * 0.12,
+                  }}
+                  className="h-2 w-2 rounded-full"
+                  style={{ backgroundColor: replyAccent }}
                 />
               ))}
             </div>
           </motion.div>
-        )}
+        ) : null}
       </div>
-
-      {/* Move legend */}
-      <div className="flex items-center gap-4 px-1">
-        <div className="flex items-center gap-1.5 text-[10px] text-slate-600">
-          <div className="h-2 w-3 rounded-sm bg-blue-500/60" />
-          Your move
-        </div>
-        <div className="flex items-center gap-1.5 text-[10px] text-slate-600">
-          <div className="h-2 w-3 rounded-sm bg-amber-500/60" />
-          Engine reply
-        </div>
-      </div>
-    </div>
-  );
+    </section>
+  )
 }
