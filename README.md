@@ -2,7 +2,8 @@
 
 **A chess engine that doesn't just tell you what move to play — it tells you why your position got this way, and what would have been different if you'd played differently.**
 
-Built at the Point72 Hackathon. Uses Judea Pearl's causal reasoning framework applied to real-time chess coaching.
+Built at the Point72 Hackathon — 4th place.
+**Sahitha Chunduru · Olivia Huang · Anurag Jakkula · Connie Lu · Barbie Zhu**
 
 ---
 
@@ -467,14 +468,3 @@ NEXT_PUBLIC_API_URL=http://localhost:5000
 - The hidden mistake detection runs 3 counterfactual replays at depth 1, which takes 10-20 seconds. This is intentional — the spinner with "Running counterfactual analysis" creates appropriate demo atmosphere.
 - Personality weights cause meaningful divergence in middlegame positions. In the opening (first 5-6 moves) all modes play similarly because material and basic development dominate the eval regardless of weights.
 - The counterfactual replay uses optimal engine play on both sides. Real human play after the alternative move would differ — the counterfactual represents an optimistic bound on how much better things could have been.
-
----
-
-## Team
-
-Built at Point72 Hackathon, April 2026.
-
-- Backend engine, causal reasoning system, Flask API
-- GM weight derivation from PGN game analysis  
-- Next.js frontend, component design
-- LLM integration and prompt engineering
