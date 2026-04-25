@@ -1,0 +1,167 @@
+{
+  "engine_version": "2.0",
+  "eval_terms": [
+    "Material",
+    "King Safety",
+    "King Attack",
+    "Mobility",
+    "Pawn Structure",
+    "Piece Activity",
+    "King Activity"
+  ],
+  "provenance": {
+    "method": "Leave-one-out peer benchmarking \u2014 Cohen's d, Pipeline A threshold map",
+    "games_per_gm": {
+      "Karpov": 1867,
+      "Kasparov": 1205,
+      "Petrosian": 946,
+      "Carlsen": 3780
+    },
+    "total_games": 7798,
+    "threshold_table": [
+      {
+        "abs_d_range": [
+          0.0,
+          0.3
+        ],
+        "mult_toward": 1.0,
+        "mult_away": 1.0
+      },
+      {
+        "abs_d_range": [
+          0.3,
+          0.7
+        ],
+        "mult_toward": 1.3,
+        "mult_away": 0.7
+      },
+      {
+        "abs_d_range": [
+          0.7,
+          1.2
+        ],
+        "mult_toward": 1.7,
+        "mult_away": 0.5
+      },
+      {
+        "abs_d_range": [
+          1.2,
+          9.99
+        ],
+        "mult_toward": 2.0,
+        "mult_away": 0.3
+      }
+    ],
+    "term_features": {
+      "Material": [
+        {
+          "feature": "material_max_deficit",
+          "invert": true
+        }
+      ],
+      "King Safety": [
+        {
+          "feature": "pawn_shield_score_avg",
+          "invert": false
+        },
+        {
+          "feature": "doubled_pawns_at_move20",
+          "invert": true
+        }
+      ],
+      "King Attack": [
+        {
+          "feature": "capture_rate",
+          "invert": false
+        },
+        {
+          "feature": "check_rate",
+          "invert": false
+        }
+      ],
+      "Mobility": [
+        {
+          "feature": "mobility_ratio",
+          "invert": false
+        },
+        {
+          "feature": "avg_subject_mobility",
+          "invert": false
+        }
+      ],
+      "Pawn Structure": [
+        {
+          "feature": "pawn_islands_at_move20",
+          "invert": true
+        },
+        {
+          "feature": "isolated_pawns_at_move20",
+          "invert": true
+        }
+      ],
+      "Piece Activity": [
+        {
+          "feature": "mobility_ratio",
+          "invert": false
+        }
+      ],
+      "King Activity": [
+        {
+          "feature": "total_plies",
+          "invert": false
+        },
+        {
+          "feature": "endgame_proportion",
+          "invert": false
+        }
+      ]
+    },
+    "pipeline": "data/*.pgn \u2192 src/feature_extractor.py \u2192 data/features/*.csv \u2192 research/02_GM_Pipeline_Master.ipynb \u2192 engine_config.json"
+  },
+  "personas": {
+    "Karpov": {
+      "weights": {
+        "Material": 1.0,
+        "King Safety": 1.0,
+        "King Attack": 1.0,
+        "Mobility": 1.0,
+        "Pawn Structure": 1.0,
+        "Piece Activity": 1.0,
+        "King Activity": 1.0
+      }
+    },
+    "Kasparov": {
+      "weights": {
+        "Material": 1.0,
+        "King Safety": 1.0,
+        "King Attack": 1.0,
+        "Mobility": 1.15,
+        "Pawn Structure": 1.0,
+        "Piece Activity": 1.3,
+        "King Activity": 0.85
+      }
+    },
+    "Petrosian": {
+      "weights": {
+        "Material": 1.0,
+        "King Safety": 1.0,
+        "King Attack": 0.7,
+        "Mobility": 1.0,
+        "Pawn Structure": 1.15,
+        "Piece Activity": 1.0,
+        "King Activity": 0.85
+      }
+    },
+    "Carlsen": {
+      "weights": {
+        "Material": 1.0,
+        "King Safety": 1.0,
+        "King Attack": 1.15,
+        "Mobility": 1.0,
+        "Pawn Structure": 1.0,
+        "Piece Activity": 1.0,
+        "King Activity": 1.15
+      }
+    }
+  }
+}
