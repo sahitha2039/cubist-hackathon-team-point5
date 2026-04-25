@@ -5,6 +5,11 @@ from engine.board import GameBoard
 from engine.search import find_best_move
 import chess.engine
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
 
 app = Flask(__name__)
 CORS(app)
@@ -22,7 +27,7 @@ def board_state():
 
 current_mode = "balanced"
 
-STOCKFISH_PATH = os.getenv("STOCKFISH_PATH", "./stockfish.exe")
+STOCKFISH_PATH = os.getenv("STOCKFISH_PATH", "./stockfish")
 
 def get_stockfish_analysis(board):
     try:
