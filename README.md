@@ -197,6 +197,10 @@ Opens at any point in the game. Runs counterfactual analysis and returns:
 - The better alternative (in green)  
 - How much better your position would be right now if you'd played differently
 
+## Demo
+
+https://github.com/user-attachments/assets/356c909b-5e9a-4105-8de7-fbae4b317058
+
 ---
 
 ## What's Novel
